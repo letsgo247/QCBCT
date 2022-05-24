@@ -1,0 +1,47 @@
+name: pandas
+channels:
+  - defaults
+dependencies:
+  - bzip2=1.0.8=he774522_0
+  - ca-certificates=2022.4.26=haa95532_0
+  - certifi=2020.6.20=pyhd3eb1b0_3
+  - libffi=3.4.2=h604cdb4_1
+  - openssl=1.1.1o=h2bbff1b_0
+  - pip=21.2.4=py310haa95532_0
+  - python=3.10.4=hbb2ffb3_0
+  - setuptools=61.2.0=py310haa95532_0
+  - sqlite=3.38.3=h2bbff1b_0
+  - tk=8.6.11=h2bbff1b_1
+  - tzdata=2022a=hda174b7_0
+  - vc=14.2=h21ff451_1
+  - vs2015_runtime=14.27.29016=h5e58377_2
+  - wheel=0.37.1=pyhd3eb1b0_0
+  - wincertstore=0.2=py310haa95532_2
+  - xz=5.2.5=h8cc25b3_1
+  - zlib=1.2.12=h8cc25b3_2
+  - pip:
+    - cycler==0.11.0
+    - et-xmlfile==1.1.0
+    - fonttools==4.33.3
+    - joblib==1.1.0
+    - kiwisolver==1.4.2
+    - matplotlib==3.5.2
+    - numpy==1.22.3
+    - openpyxl==3.0.9
+    - packaging==21.3
+    - pandas==1.4.2
+    - patsy==0.5.2
+    - pillow==9.1.1
+    - pyparsing==3.0.9
+    - python-dateutil==2.8.2
+    - pytz==2022.1
+    - scikit-learn==1.1.1
+    - scipy==1.8.1
+    - seaborn==0.11.2
+    - six==1.16.0
+    - sklearn==0.0
+    - statsmodels==0.13.2
+    - threadpoolctl==3.1.0
+    - xlrd==2.0.1
+    - xlsxwriter==3.0.3
+prefix: C:\Users\letsg\anaconda3\envs\pandas
