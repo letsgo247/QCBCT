@@ -11,12 +11,12 @@ df = pd.read_excel('data/final_6.xlsx')
 # print(df)
 # print(df.max())
 # print(df.min())
-df = df[df['patient']==30]
+# df = df[df['patient']==30]
 
 modality = ['QCBCT','CYC_CBCT','U_CBCT','CAL_CBCT']
 full_modality = ['QCT','QCBCT','CYC_CBCT','U_CBCT','CAL_CBCT']
 color_code = {'QCBCT':'red','CYC_CBCT':'blue','U_CBCT':'green','CAL_CBCT':'gold'}
-params = ['min', 'Max', 'mean', 'std']
+params = ['min', 'Max', 'mean', 'std', 'slope']
 
 sites = {
     'All':['31c','31t','41c','41t','34c','34t','44c','44t','36c','36t','46c','46t','36i','46i','21c','21t','11c','11t','24c','24t','14c','14t','26c','26t','16c','16t','26s','16s'],
@@ -30,7 +30,7 @@ sites = {
 muc = pd.MultiIndex.from_product([full_modality,params])   # multiindex 활용한 다층 culumn 생성
 indices = [key for key in sites]
 df_param = pd.DataFrame(index = indices, columns = muc)
-# print('<df_param>: ', df_param) # min, Max, mean, std 출력
+print('<df_param>: ', df_param) # min, Max, mean, std 출력
 
 
 
@@ -53,11 +53,12 @@ def analysis(group):
         # print(df_sub[modal].min())
         df_param[modal,'min'][group] = df_sub[modal].min()  # multiindex 조회
         df_param[modal,'Max'][group] = df_sub[modal].max()
-        # df_param[modal,'min-Max'][group] = f'{df_sub[modal].min()}-{df_sub[modal].max()}'
+        # df_param[modal,'min-Max'][group] = f'{df_sub[modal].min()} - {df_sub[modal].max()}'
         df_param[modal,'mean'][group] = round(df_sub[modal].mean(), 2)
         df_param[modal,'std'][group] = round(df_sub[modal].std(), 2)
 
-
+    
+    df_param['QCT','slope'][group] = '-'    # 얘는 의미 없으므로 미리 넣어주기
 
     for modal in modality:
         # 아래는 선형회귀
@@ -81,6 +82,7 @@ def analysis(group):
         # 추세선값 & R2: https://jimmy-ai.tistory.com/190
         fit_line = np.polyfit(X, Y, 1)
         # print('fit_line: ', fit_line)
+        df_param[modal,'slope'][group] = f'{fit_line[0]:.2f}'
         sign = '+' if fit_line[1] >= 0 else '-' # text 표시용 sign 미리 정하기
 
         est_Y = np.array(X) * fit_line[0] + fit_line[1]
@@ -99,7 +101,7 @@ def analysis(group):
         # print(ols(f'{modal} ~ QCT', data=df_sub).fit().summary())    # 종속(Y) ~ 독립(X)
 
 
-        plt.savefig(f'result/30/linear_{group}_{modal}.png', bbox_inches='tight')
+        plt.savefig(f'result/linear_{group}_{modal}.png', bbox_inches='tight')
         plt.close()
         # plt.show()  # ㄷㄷㄷ 이게 필요하다고 하네
         # '''
@@ -117,7 +119,7 @@ def analysis(group):
         plt.xlabel(f'mean of QCT & {modal} $(mg/cm^3)$')
         plt.ylabel(f'difference of QCT & {modal} $(mg/cm^3)$')
 
-        plt.savefig(f'result/30/Bland_Altman_{group}_{modal}.png', bbox_inches='tight')
+        plt.savefig(f'result/Bland_Altman_{group}_{modal}.png', bbox_inches='tight')
         plt.close()
         # plt.show()
         # '''
@@ -137,6 +139,6 @@ print('<df_param>: ', df_param) # min, Max, mean, std 출력
 
 
 # parameter 엑셀로 저장
-writer = pd.ExcelWriter('data/30/df_param.xlsx', engine='openpyxl')
+writer = pd.ExcelWriter('data/df_param.xlsx', engine='openpyxl')
 df_param.to_excel(writer)
 writer.save()
