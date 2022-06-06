@@ -7,11 +7,10 @@ from statsmodels.formula.api import ols
 import statsmodels.api as sm
 
 
-df = pd.read_excel('data/comp_6.xlsx')
-# print(df)
-# print(df.max())
-# print(df.min())
-# df = df[df['patient']==30]
+df = pd.read_excel('data/final_6.xlsx')
+# df = pd.read_excel('data/comp_6.xlsx')
+# patient_number = 30
+# df = df[df['patient']==patient_number]
 
 modality = ['QCBCT','CYC_CBCT','U_CBCT','CAL_CBCT']
 full_modality = ['QCT','QCBCT','CYC_CBCT','U_CBCT','CAL_CBCT']
@@ -102,6 +101,7 @@ def analysis(group):
 
 
         plt.savefig(f'result/linear_{group}_{modal}.png', bbox_inches='tight')
+        # plt.savefig(f'result/{patient_number}/linear_{group}_{modal}.png', bbox_inches='tight')
         plt.close()
         # plt.show()  # ㄷㄷㄷ 이게 필요하다고 하네
         # '''
@@ -119,7 +119,8 @@ def analysis(group):
         plt.xlabel(f'mean of QCT & {modal} $(mg/cm^3)$')
         plt.ylabel(f'difference of QCT & {modal} $(mg/cm^3)$')
 
-        plt.savefig(f'result/Bland_Altman_{group}_{modal}.png', bbox_inches='tight')
+        plt.savefig(f'result/bland_Altman_{group}_{modal}.png', bbox_inches='tight')
+        # plt.savefig(f'result/{patient_number}/Bland_Altman_{group}_{modal}.png', bbox_inches='tight')
         plt.close()
         # plt.show()
         # '''
@@ -139,6 +140,7 @@ print('<df_param>: ', df_param) # min, Max, mean, std 출력
 
 
 # parameter 엑셀로 저장
-writer = pd.ExcelWriter('data/df_param.xlsx', engine='openpyxl')
+writer = pd.ExcelWriter(f'data/df_param.xlsx', engine='openpyxl')
+# writer = pd.ExcelWriter(f'data/{patient_number}/df_param_{patient_number}.xlsx', engine='openpyxl')
 df_param.to_excel(writer)
 writer.save()
