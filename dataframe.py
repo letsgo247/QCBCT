@@ -7,7 +7,7 @@ from statsmodels.formula.api import ols
 import statsmodels.api as sm
 
 
-file = 'BMD_data.xlsx'
+file = 'data/BMD_data.xlsx'
 sheets = ['25','26','27','28','29','30']
 # modality = ['QCT','QCBCT','CYC_CBCT','U_CBCT','CAL_CBCT']
 modality = ['QCT','CAL_CBCT','QCBCT','CYC_CBCT','U_CBCT']   # 편의상 일단 기존 데이터 순서대로 추출 후 나중에 열 순서 바꾸는게 나을듯
@@ -17,7 +17,10 @@ columns = ['31c','31t','41c','41t','34c','34t','44c','44t','36c','36t','46c','46
 
 
 
-# BMD_data.xlsx 에서 df_sheet_modal 추출 (ex. df_28_UCBCT)
+
+'''
+BMD_data.xlsx 에서 df_sheet_modal 추출 (ex. df_28_UCBCT)
+'''
 for i in range(len(sheets)):
     for j in range(len(modality)):
         globals()[f'df_{sheets[i]}_{modality[j]}'] = pd.read_excel(file, sheet_name=sheets[i]).transpose().tail(125).iloc[:,(0+j*30):(28+j*30)]  # 와... globals 활용해서 for문으로 변수 자동 생성해버림 ㅋㅋㅋㅋ transpose 및 필요한 행 추출까지 바로 시행! +indexing으로 modality별 구분까지!!!
@@ -29,8 +32,11 @@ for i in range(len(sheets)):
 
 
 
-# final.xlsx 생성
-#'''
+
+
+'''
+final.xlsx 생성
+'''
 sites = {'LAC':['31c','41c'], 'LAT':['31t','41t'], 'LPC':['34c','44c'], 'LPT':['34t','44t'], 'LMC':['36c','46c'], 'LMT':['36t','46t'], 'LI':['36i','46i'], 'UAC':['21c','11c'], 'UAT':['21t','11t'], 'UPC':['24c','14c'], 'UPT':['24t','14t'], 'UMC':['26c','16c'], 'UMT':['26t','16t'], 'US':['26s','16s']}
 
 
@@ -74,7 +80,37 @@ for index in df.index:
 df = df[['QCT','QCBCT','CYC_CBCT','U_CBCT','CAL_CBCT','patient','site']]    # 보기 편한 열 순서로 바꾸기!
 
 
-writer = pd.ExcelWriter('data/final_6.xlsx', engine='openpyxl')
-df.to_excel(writer)
+# 저장
+# writer = pd.ExcelWriter('data/final_6.xlsx', engine='openpyxl')
+# df.to_excel(writer)
+# writer.save()
+# #'''
+
+
+
+
+
+
+'''
+compressed df 제작
+'''
+df_comp = pd.DataFrame(index = range(int(len(df)/25)), columns = ['QCT','QCBCT','CYC_CBCT','U_CBCT','CAL_CBCT','patient','site'])
+# print(df_comp)
+
+for i in range(int(len(df)/25)):
+    # print(i)
+    df_25 = df.iloc[i*25:i*25+25].mean(numeric_only=True)
+    df_25['patient'] = int(df.iloc[i*25]['patient'])
+    df_25['site'] = df.iloc[i*25]['site']
+    # print(df_25)
+    df_comp.iloc[i] = df_25
+
+# print(df_comp)
+
+# 저장
+writer = pd.ExcelWriter('data/comp_6.xlsx', engine='openpyxl')
+df_comp.to_excel(writer)
 writer.save()
 #'''
+
+

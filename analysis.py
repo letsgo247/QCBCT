@@ -7,7 +7,7 @@ from statsmodels.formula.api import ols
 import statsmodels.api as sm
 
 
-df = pd.read_excel('data/final_6.xlsx')
+df = pd.read_excel('data/comp_6.xlsx')
 # print(df)
 # print(df.max())
 # print(df.min())
