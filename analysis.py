@@ -7,14 +7,23 @@ from statsmodels.formula.api import ols
 import statsmodels.api as sm
 
 
-df = pd.read_excel('final.xlsx', sheet_name='Total')
+df = pd.read_excel('data/final_6.xlsx')
 # print(df)
 # print(df.max())
 # print(df.min())
 
-modality = ['CALCBCT','QCBCT','CYCCBCT','UCBCT']
+modality = ['QCBCT','CYC_CBCT','U_CBCT','CAL_CBCT']
+full_modality = ['QCT','QCBCT','CYC_CBCT','U_CBCT','CAL_CBCT']
+params = ['min', 'Max', 'mean', 'std']
 
 sites = {'LAC':['31c','41c'], 'LAT':['31t','41t'], 'LPC':['34c','44c'], 'LPT':['34t','44t'], 'LMC':['36c','46c'], 'LMT':['36t','46t'], 'LI':['36i','46i'], 'UAC':['21c','11c'], 'UAT':['21t','11t'], 'UPC':['24c','14c'], 'UPT':['24t','14t'], 'UMC':['26c','16c'], 'UMT':['26t','16t'], 'US':['26s','16s']}    
+
+muc = pd.MultiIndex.from_product([full_modality,params])   # multiindex 활용한 다층 culumn 생성
+indices = [key for key in sites]
+df_param = pd.DataFrame(index = indices, columns = muc)
+# print('<df_param>: ', df_param) # min, Max, mean, std 출력
+
+
 
 
 def analysis(group):
@@ -23,10 +32,29 @@ def analysis(group):
         # print('야임마', site)
         df_list.append(df[df['site']==site])
     df_sub = pd.concat(df_list)
+   
 
+
+    print(f'================================{group}================================')
     # print(df_sub)
-    # print(df_sub.mean())  # 평균
-    # print(df_sub.std())   # 표준편차
+    # print(df_sub['QCT'])
+    for modal in full_modality:
+        # print(df_param[modal,'min'][group])
+        # print(df_sub[modal].min())
+        df_param[modal,'min'][group] = df_sub[modal].min()  # multiindex 조회
+        df_param[modal,'Max'][group] = df_sub[modal].max()
+        df_param[modal,'min-Max'][group] = f'{df_sub[modal].min()}-{df_sub[modal].max()}'
+        df_param[modal,'mean'][group] = round(df_sub[modal].mean(), 2)
+        df_param[modal,'std'][group] = round(df_sub[modal].std(), 2)
+        # df_param[modal,'mean'][group] = f'{df_sub[modal].mean():.2f}'
+
+
+        # print('<min>', df_sub['QCT'].min()) # 최소
+        # print('<max>', df_sub.max()) # 최대
+        # print('<mean>', df_sub.mean())  # 평균
+        # print('<std>', df_sub.std())   # 표준편차
+
+
 
     for modal in modality:
         # 아래는 선형회귀
@@ -43,7 +71,7 @@ def analysis(group):
 
         x = range(-1000,2000)
         y = x
-        plt.plot(x,y,ls='dotted',color='pink')
+        plt.plot(x,y,ls='dotted')
 
 
         # 추세선값 & R2: https://jimmy-ai.tistory.com/190
@@ -90,19 +118,18 @@ def analysis(group):
 
 
 # 별개 출력
-# analysis('US')
+# analysis('LAC')
+
 
 # 전체 출력
 for group in sites:
     analysis(group)
-
-        
         
 
-# # 필요 데이터 선택
-# df_sub = df[(df['site']=='31c') | (df['site']=='41c')]
-# print(df_sub)
+
+print('<df_param>: ', df_param) # min, Max, mean, std 출력
 
 
-
-
+writer = pd.ExcelWriter('data/df_param.xlsx', engine='openpyxl')
+df_param.to_excel(writer)
+writer.save()
