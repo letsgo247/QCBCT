@@ -7,8 +7,8 @@ from statsmodels.formula.api import ols
 import statsmodels.api as sm
 
 
-df = pd.read_excel('data/final_6.xlsx')
-# df = pd.read_excel('data/comp_6.xlsx')
+# df = pd.read_excel('data/final_6.xlsx')
+df = pd.read_excel('data/comp_6.xlsx')
 # patient_number = 30
 # df = df[df['patient']==patient_number]
 
@@ -29,7 +29,7 @@ sites = {
 muc = pd.MultiIndex.from_product([full_modality,params])   # multiindex 활용한 다층 culumn 생성
 indices = [key for key in sites]
 df_param = pd.DataFrame(index = indices, columns = muc)
-print('<df_param>: ', df_param) # min, Max, mean, std 출력
+# print('<df_param>: ', df_param) # min, Max, mean, std 출력
 
 
 
@@ -81,11 +81,12 @@ def analysis(group):
         # 추세선값 & R2: https://jimmy-ai.tistory.com/190
         fit_line = np.polyfit(X, Y, 1)
         # print('fit_line: ', fit_line)
-        df_param[modal,'slope'][group] = f'{fit_line[0]:.2f}'
+        df_param[modal,'slope'][group] = round(fit_line[0], 2)
         sign = '+' if fit_line[1] >= 0 else '-' # text 표시용 sign 미리 정하기
 
         est_Y = np.array(X) * fit_line[0] + fit_line[1]
-        r2 = r2_score(Y, est_Y)
+        r2 = r2_score(X, Y) # QCT와 비교
+        # r2 = r2_score(Y, est_Y)   # 회귀값과 비교
         # print('r2: ', r2)
 
         
@@ -136,11 +137,11 @@ for group in sites:
         
 
 
-print('<df_param>: ', df_param) # min, Max, mean, std 출력
 
 
-# parameter 엑셀로 저장
-writer = pd.ExcelWriter(f'data/df_param.xlsx', engine='openpyxl')
-# writer = pd.ExcelWriter(f'data/{patient_number}/df_param_{patient_number}.xlsx', engine='openpyxl')
-df_param.to_excel(writer)
-writer.save()
+# # parameter 엑셀로 저장
+# print('<df_param>: ', df_param) # min, Max, mean, std 출력
+# writer = pd.ExcelWriter(f'data/df_param.xlsx', engine='openpyxl')
+# # writer = pd.ExcelWriter(f'data/{patient_number}/df_param_{patient_number}.xlsx', engine='openpyxl')
+# df_param.to_excel(writer)
+# writer.save()
